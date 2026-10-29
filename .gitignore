@@ -1,0 +1,90 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python cache / tooling
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Python environments and local env files
+.venv/
+venv/
+env/
+ENV/
+.python-version
+.env
+.env.*
+
+# Logs
+*.log
+*.csv
+outputs/
+
+# Frontend dependencies and build outputs
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Generic JS dependencies (in case root package is added later)
+node_modules/
+dist/
+
+# Local datasets and generated research artifacts
+data/
+research/charts/
+research/metrics.json
+research/reports/*.json
+research/reports/dreaddit_strict/
+
+# Model binaries and checkpoints
+models/
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+*.bin
+
+# Local documents and archives
+*.doc
+*.docx
+*.pdf
+*.zip
+*.tar
+*.gz
+
+# Credentials, certificates, and private keys
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# Local caches and downloaded model stores
+.cache/
+**/.cache/
+.huggingface/
+**/.huggingface/
+
+# Optional notebook checkpoints
+.ipynb_checkpoints/
