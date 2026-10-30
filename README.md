@@ -20,7 +20,8 @@ The current implementation includes:
 
 - strict external benchmarking on Dreaddit
 - overlap checks before external evaluation
-- transformer sentence-embedding baseline for comparison
+- a legacy sentence-embedding baseline for comparison
+- a fine-tuned DistilBERT model with token-level SHAP explanations
 - bootstrap 95% confidence intervals for headline external metrics
 
 Text-only external benchmark (Dreaddit test):
@@ -45,10 +46,26 @@ Transformer baseline external benchmark (same test split, different training set
 
 Notes:
 
+- strict training set: 2,816 rows after normalization and removal of 19 duplicate rows
 - strict external test size: 715 samples
 - strict train vs strict test overlap: 0 rows
 - fusion was skipped for Dreaddit external claims because no image column is available
-- transformer is currently used in the research-evaluation pipeline; the production prediction path remains calibrated TF-IDF + LinearSVC
+- the table above reports the strict TF-IDF external evaluation
+- the legacy sentence-embedding baseline is retained for research comparison
+- the production prediction path defaults to calibrated TF-IDF + LinearSVC; fine-tuned DistilBERT is explicitly selectable
+
+Latest fine-tuned DistilBERT external evaluation on the same 715-row test set:
+
+| Metric | Fine-tuned DistilBERT |
+| --- | ---: |
+| accuracy | 0.7916 |
+| weighted F1 | 0.7914 |
+| ROC-AUC | 0.8863 |
+
+The DistilBERT configuration used `distilbert-base-uncased`, two epochs, batch
+size 8, maximum sequence length 256, learning rate `2e-5`, seed 42, and CPU
+execution. These strict results are separate from the original accepted-paper
+results and must not be silently substituted for them.
 
 ## Core Features
 
@@ -67,6 +84,8 @@ Notes:
 - scikit-learn
 - pandas, numpy
 - sentence-transformers
+- transformers, torch
+- SHAP
 - DeepFace, OpenCV
 - matplotlib, seaborn
 - React (Vite)
@@ -180,7 +199,15 @@ This uses `shap.Explainer` with `shap.maskers.Text` and the Partition
 algorithm to explain class-1 probability. The generated artifact records the
 model directory, sample count, tokenizer-based tokens, base probability, and
 per-token SHAP values. SHAP is audited on a representative subset because
-token masking is substantially slower than ordinary inference.
+token masking is substantially slower than ordinary inference. The latest audit
+covered 10 representative samples and had a maximum probability additivity
+error of approximately `2.22e-16`.
+
+The latest TF-IDF SHAP audit covered all 715 external samples and had a maximum
+decision-function additivity error of approximately `1.55e-15`. TF-IDF SHAP
+explains the uncalibrated linear decision function, whereas DistilBERT SHAP
+explains class-1 probability. Neither attribution method is clinical evidence
+or a diagnosis.
 
 Validate strict external split:
 
@@ -261,7 +288,7 @@ Update these image paths if you maintain UI screenshots:
 - human-in-the-loop review for high-risk cases
 - multilingual and localized support
 - session-level temporal trend modeling
-- stronger explanation tooling (for example SHAP/LIME)
+- asynchronous or cached DistilBERT SHAP explanations for faster API responses
 - secure auth and session management
 - cloud deployment with CI/CD and observability
 
